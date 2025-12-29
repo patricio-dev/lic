@@ -1,0 +1,39 @@
+name: Bot Lic
+
+on:
+  schedule:
+    # Explicación del CRON: '*/30 0-2,8-23 * * *'
+    # */30  -> Ejecutar en el minuto 0 y en el 30 (cada media hora).
+    # 0-2   -> Entre las 00:00 y 02:00 UTC (21:00 a 23:00 Chile).
+    # 8-23  -> Entre las 08:00 y 23:00 UTC (05:00 a 20:00 Chile).
+    # * * * -> Todos los días del mes, todos los meses, todos los días de la semana.
+    - cron: '*/30 0-2,8-23 * * *'
+  
+  # Permite ejecutarlo manualmente si quieres probarlo en cualquier momento
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    
+    # IMPORTANTE: Definimos un tiempo máximo de 10 minutos para evitar
+    # que se consuman tus minutos gratis si el robot se queda pegado.
+    timeout-minutes: 10
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Instalar librerías
+        run: pip install -r requirements.txt
+
+      - name: Crear credenciales desde Secreto
+        run: echo '${{ secrets.GCP_CREDENTIALS }}' > credenciales_google.json
+
+      - name: Ejecutar Robot
+        run: python main.py
