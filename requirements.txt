@@ -1,0 +1,9 @@
+pandas
+selenium
+gspread
+google-auth
+webdriver-manager
+openpyxl
+xlrd
+requests
+fake-useragent
